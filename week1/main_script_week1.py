@@ -19,7 +19,7 @@ np.set_printoptions(linewidth=200)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Step A. Download images [Already implemented]
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# cd /python/week1
+#cd '/Users/Alessio/Dropbox/Uva Master HCM/Python/MIS Lab/multi_week1'
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Step B. Basic image operations [Already implemented]
@@ -29,8 +29,8 @@ np.set_printoptions(linewidth=200)
 im = array(imread('../../data/objects/flower/1.jpg'))
 
 # B.2 Show image
-imshow(im)
-axis('off')
+#imshow(im)
+#axis('off')
 
 # B.3 Get image size
 H, W, C = im.shape    # H for height, W for width, C for number of color channels
@@ -54,15 +54,18 @@ histo_r = np.bincount(im_r,None,256)
 # C.3 Compute now the histograms from the other channels, that is G and B
 im_g = im[:, :, 1].flatten()
 histo_g = np.bincount(im_g,None,256)
+
 im_b = im[:, :, 2].flatten()
 histo_b = np.bincount(im_b,None,256)
 
+#print histo_r
+#print histo_g
+#print histo_b
 # C.4 Concatenate histograms from R, G, B one below the other into a single histogram
 histo = np.concatenate([histo_r, histo_g, histo_b])
-matplotlib.pyplot.bar(range(0, len(histo_r)), histo_r, 0.8, None, None, color='red')
-matplotlib.pyplot.bar(range(0, len(histo_g)), histo_g, 0.8, None, None, color='green')
-matplotlib.pyplot.bar(range(0, len(histo_b)), histo_b, 0.8, None, None, color='blue')
-
+#plt.bar(range(0, len(histo_r)), histo_r, 0.8, None, None, color='red', edgecolor='None')
+#plt.bar(range(0, len(histo_g)), histo_g, 0.8, None, None, color='green', edgecolor='None')
+#plt.bar(range(0, len(histo_b)), histo_b, 0.8, None, None, color='blue', edgecolor='None')
 ######
 # C.5 PUT YOUR CODE INTO THE FUNCTION extractColorHistogram( im ) IN week1.py
 ######
@@ -72,29 +75,31 @@ matplotlib.pyplot.bar(range(0, len(histo_b)), histo_b, 0.8, None, None, color='b
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # D.1 Open images and extract their RGB histograms
-im1 = imread('../../data/objects/flower/1.jpg')
+im1 = plt.imread('../../data/objects/flower/1.jpg')
 histo1 = week1.extractColorHistogram(im1)
-im2 = imread('../../data/objects/flower/3.jpg')
+im2 = plt.imread('../../data/objects/flower/3.jpg')
 histo2 = week1.extractColorHistogram(im2)
 
 # D.2 Compute euclidean distance: d=Σ(x-y)^2 
 # Note: the ***smaller*** the value, the more similar the histograms
-dist_euc = np.linalg.norm(histo1 - histo2)
-print dist_euc
+dist_euc = np.linalg.norm(histo1-histo2)
+#print dist_euc
 
 # D.3 Compute histogram intersection distance: d=Σmin(x, y)
 # Note: the ***larger*** the value, the more similar the histograms
-dist_hi = sum(np.minimum(histo1, histo2))
+dist_hi = sum(np.minimum(histo1,histo2))
 print dist_hi
 
 # D.4 Compute chi-2 similarity: d= Σ(x-y)^2 / (x+y)
 # Note: the ***larger*** the value, the more similar the histograms
-dist_chi2 = sum(((histo1 - histo2) **2) / (histo1+histo2))
+dist_chi2 = sum((histo1-histo2)**2 / (histo1+histo2))
 print dist_chi2
 
 # D.5 Compute hellinger distance: d= Σsqrt(x*y)
 # Note: the ***larger*** the value, the more similar the histograms
-dist_hell = sum(np.sqrt(histo1*histo2))
+#dist_hell = sum(sqrt(histo1*histo2))
+dist_hell = sum(np.sqrt(histo1)*np.sqrt(histo2))
+#dist_hell = np.sqrt(np.sum((np.sqrt(histo1) - np.sqrt(histo2)) ** 2)) / np.sqrt(2)
 print dist_hell
 
 ######
@@ -107,22 +112,24 @@ print dist_hell
 
 # E.1 Compute histograms for all images in the dataset
 impaths = tools.getImagePathsFromObjectsDataset('flower') # [ALREADY IMPLEMENTED]
+#print impaths
 histo = []
 for i in list(xrange(len(impaths))):
-    histo.append(week1.extractColorHistogram(array(imread(impaths[i]))))
+    histo.append(week1.extractColorHistogram(imread(impaths[i])))
     
 # E.2 Compute distances between all images in the dataset
 imdists = []
-for i in range(0, 60):
+for i in range(0,60):
     imdists.append([])
-    for j in range(0, 60):
-        imdists[i].append(week1.computeVectorDistance(histo[i], histo[j], 'euclidean'))
-#print imdists[2]
+    for j in range(0,60):
+        imdists[i].append(week1.computeVectorDistance(histo[i], histo[j], 'l2'))
+print imdists[20]        
+        
     
 # E.3 Given an image, rank all other images
-query_id = rnd.randint(0, 59) # get a random image for a query
-sorted_id = np.argsort(imdists[query_id])
-print sorted_id
+query_id = rnd.randint(0, 60) # get a random image for a query
+ranking = np.argsort(imdists[query_id])
+print ranking
 
 # E.4 Showing results. First image is the query, the rest are the top-5 most similar images [ALREADY IMPLEMENTED]
 fig = plt.figure()
@@ -134,10 +141,10 @@ ax.set_title('Query image')
 
 for i in np.arange(1, 1+5):
     ax = fig.add_subplot(2, 3, i+1)
-    im = imread(impaths[sorted_id[i-1]]) # The 0th image is the query itself
+    im = imread(impaths[ranking[i-1]]) # The 0th image is the query itself
     ax.imshow(im)
     ax.axis('off')
-    ax.set_title(impaths[sorted_id[i-1]])
+    ax.set_title(impaths[ranking[i-1]])
 
 ######
 # E.5 PUT YOUR CODE INTO THE FUNCTIONS computeImageDistances( images )
@@ -151,11 +158,10 @@ im = array(Image.open('../../data/objects/flower/1.jpg').convert('L'))
 imshow(im, cmap='gray') # To show as grayscale image
 
 # F.2 Compute gaussian filter
-sigma = 10
+sigma = 10.0
 half_size = 3*sigma
-x = np.arange(-half_size, half_size + 1)    
+x = np.arange(-half_size, half_size + 1)
 G = 1/(sigma * np.sqrt(2 * np.pi)) * np.exp(-(x**2)/(2*sigma**2))
-print G
 
 # F.3 Apply gaussian convolution filter to the image. See the result. Compare with Python functionality
 im_gf = week1.apply_gaussian_conv(im, G) # [ALREADY IMPLEMENTED, YOU ONLY NEED TO INPUT YOUR GAUSSIAN FILTER G]
@@ -183,7 +189,7 @@ ax = fig.add_subplot(1, 2, 2)
 ax.imshow(im_dcol, cmap='gray')
 
 # F.6 Compute the magnitude and the orientation of the gradients of an image
-# im_dmag = ...
+im_dmag = np.sqrt((im_drow**2)+(im_dcol**2))
 
 fig = plt.figure()
 imshow(im_dmag, cmap='gray')
