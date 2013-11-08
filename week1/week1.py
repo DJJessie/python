@@ -47,18 +47,14 @@ def computeVectorDistance( vec1, vec2, dist_type ):
     return dist
     
 def computeImageDistances( images ):
-    histo = []
-    for i in list(xrange(len(images))):
-        histo.append(extractColorHistogram((images[i])))
-        #print histo[2]
-    
-    # E.2 Compute distances between all images in the dataset
+    # PRE [DO NOT TOUCH]
     imdists = []
-    for i in range(0,60):
-        imdists.append([])
-        for j in range (0,60):
-            imdists[i].append(computeVectorDistance(histo[i], histo[j], 'euclidean'))
     
+    # WRITE YOUR CODE HERE
+    for i in range(0, 60):
+        imdists.append([])
+        for j in range(0, 60):
+            imdists[i].append(extractColorHistogram.histo(images))
     
     # RETURN [DO NOT TOUCH]
     return imdists
