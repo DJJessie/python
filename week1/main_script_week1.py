@@ -151,8 +151,11 @@ im = array(Image.open('../../data/objects/flower/1.jpg').convert('L'))
 imshow(im, cmap='gray') # To show as grayscale image
 
 # F.2 Compute gaussian filter
-sigma = 10.0
-# G = get_gaussian_filter... # WRITE YOUR CODE HERE
+sigma = 10
+half_size = 3*sigma
+x = np.arange(-half_size, half_size + 1)    
+G = 1/(sigma * np.sqrt(2 * np.pi)) * np.exp(-(x**2)/(2*sigma**2))
+print G
 
 # F.3 Apply gaussian convolution filter to the image. See the result. Compare with Python functionality
 im_gf = week1.apply_gaussian_conv(im, G) # [ALREADY IMPLEMENTED, YOU ONLY NEED TO INPUT YOUR GAUSSIAN FILTER G]
@@ -165,7 +168,8 @@ ax = fig.add_subplot(1, 2, 2)
 ax.imshow(im_gf2, cmap='gray')
 
 # F.4 Compute first order gaussian derivative filter in one dimension, row or column
-# dG = get_gaussian_der_filter ... # WRITE YOUR CODE HERE
+dG = -(x/sigma**2) * G
+print dG
 
 # Apply first on the row dimension
 im_drow = week1.apply_filter(im, dG, 'row') # [ALREADY IMPLEMENTED, YOU ONLY NEED TO INPUT YOUR GAUSSIAN DERIVATIVE dG YOU JUST IMPLEMENTED]
